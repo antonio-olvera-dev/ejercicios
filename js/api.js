@@ -12,7 +12,7 @@ let myObjet = {
     humidity: ''
 };
 
-
+let blockIni = false;
 // cit = prompt('Escriba el nombre de la ciudad');
 
 document.querySelector('#et').addEventListener('keyup', (e) => {
@@ -56,11 +56,16 @@ function getTemp(city) {
             myObjet.wind = data.wind.speed;
             myObjet.humidity = data.main.humidity;
 
-            console.log(myObjet);
             document.getElementById('icono').src = `http://openweathermap.org/img/wn/${myObjet.weatherIcon}@4x.png`;
             document.getElementById('texto-title').innerHTML = myObjet.name;
 
             print();
+
+            if (!blockIni) {
+                document.getElementsByClassName('main')[0].style.display = 'none'
+                document.getElementsByClassName('main')[0].style.display = 'flex'
+                blockIni = true;
+            }
         }
 
     }
