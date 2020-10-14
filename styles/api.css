@@ -19,7 +19,7 @@
 html{
     
   animation-name: animIni;
-  animation-duration: 500ms;
+  animation-duration: 400ms;
   animation-timing-function: linear;
 }
 @keyframes animIni {

@@ -1,4 +1,7 @@
-//https://home.openweathermap.org/
+"use strict";
+//https://openweathermap.org/
+
+
 let cit = "Madrid";
 let temp;
 
@@ -16,38 +19,21 @@ let blockIni = false;
 // cit = prompt('Escriba el nombre de la ciudad');
 
 document.querySelector('#et').addEventListener('keyup', (e) => {
-    
-    
-   if (e.key === 'Enter') {
-    let text = '';
-    text = document.querySelector('#et').value;
-    getTemp(text);
-   }
+
+
+    if (e.key === 'Enter') {
+        let text = '';
+        text = document.querySelector('#et').value;
+        lanzar(text);
+    }
 
 });
 
-document.querySelector('#bt').addEventListener('click', () => {
-    let text = '';
-    text = document.querySelector('#et').value;
 
-    getTemp(text);
+function lanzar(text) {
 
-})
-
-function getTemp(city) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${myKey}`);
-    xhr.send();
-
-    //------------------------------------------
-
-    xhr.onload = () => {
-        if (xhr.status !== 200) {
-            console.log(`Error: ${xhr.statusText}`);
-            alert('No se ha encontrado la ciudad indicada')
-        } else {
-            const data = JSON.parse(xhr.response);
-
+    getTemp(text)
+        .then(data => {
             myObjet.name = data.name;
             myObjet.weather = data.weather[0].main;
             myObjet.weatherDescription = data.weather[0].description;
@@ -66,11 +52,59 @@ function getTemp(city) {
                 document.getElementsByClassName('main')[0].style.display = 'flex'
                 blockIni = true;
             }
-        }
 
-    }
+
+
+        })
+        .catch(error => console.log(error));
+}
+
+document.querySelector('#bt').addEventListener('click', () => {
+    let text = '';
+    text = document.querySelector('#et').value;
+
+    lanzar(text);
+
+})
+
+
+
+
+
+
+function getTemp(city) {
+
+    let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${myKey}`;
+    const promesa = new Promise((resolve, reject) => {
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', `${url}`);
+        xhr.send();
+
+        //------------------------------------------
+
+        xhr.onload = () => {
+            if (xhr.status !== 200) {
+                // console.log(`Error: ${xhr.statusText}`);
+                reject(`Error: ${xhr.statusText}`);
+                // alert('No se ha encontrado la ciudad indicada')
+            } else {
+                const data = JSON.parse(xhr.response);
+                resolve(data);
+
+
+            }
+
+        }
+    });
+
+    return promesa;
 
 }
+
+
+
+
 
 
 
@@ -79,7 +113,9 @@ function print() {
     print2(`Clima: ${myObjet.weather}`);
     print2(`Descripción del clima: ${myObjet.weatherDescription}`);
     print2(`Temperatura: ${myObjet.temp} ºC`);
-    print2(`Velocidad del viento: ${myObjet.wind} Ms`);
+    //------------------------------------------
+    let conver = Number(myObjet.wind) * 3.6;
+    print2(`Velocidad del viento: ${conver} km/h`);
     print2(`Humedad: ${myObjet.humidity}%`);
 
 
@@ -106,51 +142,4 @@ function print2(cont) {
 }
 
 
-getTemp(cit);
-
-
-//http://openweathermap.org/img/wn/01d@2x.png
-// {
-//   "coord": {
-//     "lon": -122.08,
-//     "lat": 37.39
-//   },
-//   "weather": [
-//     {
-//       "id": 800,
-//       "main": "Clear",
-//       "description": "clear sky",
-//       "icon": "01d"
-//     }
-//   ],
-//   "base": "stations",
-//   "main": {
-//     "temp": 282.55,
-//     "feels_like": 281.86,
-//     "temp_min": 280.37,
-//     "temp_max": 284.26,
-//     "pressure": 1023,
-//     "humidity": 100
-//   },
-//   "visibility": 16093,
-//   "wind": {
-//     "speed": 1.5,
-//     "deg": 350
-//   },
-//   "clouds": {
-//     "all": 1
-//   },
-//   "dt": 1560350645,
-//   "sys": {
-//     "type": 1,
-//     "id": 5122,
-//     "message": 0.0139,
-//     "country": "US",
-//     "sunrise": 1560343627,
-//     "sunset": 1560396563
-//   },
-//   "timezone": -25200,
-//   "id": 420006353,
-//   "name": "Mountain View",
-//   "cod": 200
-//   }                         
+lanzar(cit);
